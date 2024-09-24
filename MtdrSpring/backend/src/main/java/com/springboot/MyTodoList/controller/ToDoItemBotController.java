@@ -22,6 +22,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.springboot.MyTodoList.model.ToDoItem;
 import com.springboot.MyTodoList.service.ToDoItemService;
+import com.springboot.MyTodoList.service.ProyectoService;
+import com.springboot.MyTodoList.service.TareaService;
 import com.springboot.MyTodoList.util.BotCommands;
 import com.springboot.MyTodoList.util.BotHelper;
 import com.springboot.MyTodoList.util.BotLabels;
@@ -31,15 +33,19 @@ public class ToDoItemBotController extends TelegramLongPollingBot {
 
 	private static final Logger logger = LoggerFactory.getLogger(ToDoItemBotController.class);
 	private ToDoItemService toDoItemService;
+	private ProyectoService proyectoService;
+	private TareaService tareaService;
 	private String botName;
 
-	public ToDoItemBotController(String botToken, String botName, ToDoItemService toDoItemService) {
-		super(botToken);
-		logger.info("Bot Token: " + botToken);
-		logger.info("Bot name: " + botName);
-		this.toDoItemService = toDoItemService;
-		this.botName = botName;
-	}
+	public ToDoItemBotController(String botToken, String botName, ToDoItemService toDoItemService, ProyectoService proyectoService, TareaService tareaService) {
+        super(botToken);
+        logger.info("Bot Token: " + botToken);
+        logger.info("Bot name: " + botName);
+        this.toDoItemService = toDoItemService;
+        this.proyectoService = proyectoService;
+        this.tareaService = tareaService;
+        this.botName = botName;
+    }
 
 	@Override
 	public void onUpdateReceived(Update update) {
