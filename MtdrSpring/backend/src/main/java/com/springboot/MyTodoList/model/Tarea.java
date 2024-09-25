@@ -8,13 +8,14 @@ public class Tarea {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String nombre;
     private String descripcion;
-    @Temporal(TemporalType.DATE)
-    private Date fechaInicio;
-    @Temporal(TemporalType.DATE)
-    private Date fechaFin;
-    private String prioridad; // Alta, Media, Baja
+    private String estatus;  // Corresponde a "Status" en el diagrama
+    private Float tiempoEstimado;  // Corresponde a "EstimatedTime" en el diagrama
+    private Float tiempoReal;  // Corresponde a "ActualTime" en el diagrama
+    private Date fechaFinalizacion;  // Corresponde a "CompletionDate" en el diagrama
+    private Integer puntuacionCalidad;  // Corresponde a "QualityScore" en el diagrama
+    private Float eficienciaTarea;  // Corresponde a "TaskEfficiency" en el diagrama
+    private Float productividadTarea;  // Corresponde a "TaskProductivity" en el diagrama
 
     @ManyToOne
     @JoinColumn(name = "proyecto_id", nullable = false)
@@ -29,14 +30,6 @@ public class Tarea {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
     public String getDescripcion() {
         return descripcion;
     }
@@ -45,28 +38,60 @@ public class Tarea {
         this.descripcion = descripcion;
     }
 
-    public Date getFechaInicio() {
-        return fechaInicio;
+    public String getEstatus() {
+        return estatus;
     }
 
-    public void setFechaInicio(Date fechaInicio) {
-        this.fechaInicio = fechaInicio;
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
     }
 
-    public Date getFechaFin() {
-        return fechaFin;
+    public Float getTiempoEstimado() {
+        return tiempoEstimado;
     }
 
-    public void setFechaFin(Date fechaFin) {
-        this.fechaFin = fechaFin;
+    public void setTiempoEstimado(Float tiempoEstimado) {
+        this.tiempoEstimado = tiempoEstimado;
     }
 
-    public String getPrioridad() {
-        return prioridad;
+    public Float getTiempoReal() {
+        return tiempoReal;
     }
 
-    public void setPrioridad(String prioridad) {
-        this.prioridad = prioridad;
+    public void setTiempoReal(Float tiempoReal) {
+        this.tiempoReal = tiempoReal;
+    }
+
+    public Date getFechaFinalizacion() {
+        return fechaFinalizacion;
+    }
+
+    public void setFechaFinalizacion(Date fechaFinalizacion) {
+        this.fechaFinalizacion = fechaFinalizacion;
+    }
+
+    public Integer getPuntuacionCalidad() {
+        return puntuacionCalidad;
+    }
+
+    public void setPuntuacionCalidad(Integer puntuacionCalidad) {
+        this.puntuacionCalidad = puntuacionCalidad;
+    }
+
+    public Float getEficienciaTarea() {
+        return eficienciaTarea;
+    }
+
+    public void setEficienciaTarea(Float eficienciaTarea) {
+        this.eficienciaTarea = eficienciaTarea;
+    }
+
+    public Float getProductividadTarea() {
+        return productividadTarea;
+    }
+
+    public void setProductividadTarea(Float productividadTarea) {
+        this.productividadTarea = productividadTarea;
     }
 
     public Proyecto getProyecto() {

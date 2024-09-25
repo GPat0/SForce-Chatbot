@@ -4,7 +4,8 @@ import com.springboot.MyTodoList.model.Tarea;
 import com.springboot.MyTodoList.repository.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Date;
+
+import java.util.Optional;
 
 @Service
 public class TareaService {
@@ -12,15 +13,45 @@ public class TareaService {
     @Autowired
     private TareaRepository tareaRepository;
 
+    // Crear una nueva tarea
     public Tarea crearTarea(Tarea tarea) {
-        // Validaciones básicas
-        if (tarea.getNombre() == null || tarea.getDescripcion() == null ||
-            tarea.getFechaInicio() == null || tarea.getFechaFin() == null ||
-            tarea.getFechaInicio().after(tarea.getFechaFin()) ||
-            tarea.getPrioridad() == null) {
+        // Validaciones más complejas según el nuevo modelo
+        if (tarea.getDescripcion() == null || tarea.getEstatus() == null ||
+            tarea.getTiempoEstimado() == null || tarea.getFechaFinalizacion() == null) {
             throw new IllegalArgumentException("Información de la tarea no válida");
         }
-        // Guardar la tarea en la base de datos
         return tareaRepository.save(tarea);
+    }
+
+    // Listar todas las tareas
+    public Iterable<Tarea> listarTodasLasTareas() {
+        return tareaRepository.findAll();
+    }
+
+    // Actualizar una tarea existente
+    public Tarea actualizarTarea(Long id, Tarea tarea) {
+        return tareaRepository.findById(id)
+                .map(tareaExistente -> {
+                    tareaExistente.setDescripcion(tarea.getDescripcion());
+                    tareaExistente.setEstatus(tarea.getEstatus());
+                    tareaExistente.setTiempoEstimado(tarea.getTiempoEstimado());
+                    tareaExistente.setTiempoReal(tarea.getTiempoReal());
+                    tareaExistente.setFechaFinalizacion(tarea.getFechaFinalizacion());
+                    tareaExistente.setPuntuacionCalidad(tarea.getPuntuacionCalidad());
+                    tareaExistente.setEficienciaTarea(tarea.getEficienciaTarea());
+                    tareaExistente.setProductividadTarea(tarea.getProductividadTarea());
+                    return tareaRepository.save(tareaExistente);
+                }).orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
+    }
+
+    // Eliminar una tarea
+    public void eliminarTarea(Long id) {
+        tareaRepository.deleteById(id);
+    }
+
+    // Obtener una tarea por ID
+    public Tarea obtenerTareaPorId(Long id) {
+        Optional<Tarea> tarea = tareaRepository.findById(id);
+        return tarea.orElse(null);
     }
 }

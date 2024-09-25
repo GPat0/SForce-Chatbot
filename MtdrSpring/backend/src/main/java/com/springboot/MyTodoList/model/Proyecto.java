@@ -10,14 +10,14 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String nombre;
-    private String descripcion;
+    private String estatus; // Agregado para reflejar el campo en el diagrama
     @Temporal(TemporalType.DATE)
     private Date fechaInicio;
     @Temporal(TemporalType.DATE)
     private Date fechaFin;
 
-    @OneToMany(mappedBy = "proyecto")
-    private List<Tarea> tareas;
+    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Tarea> tareas; // Configuración para manejo de las tareas como parte del proyecto
 
     // Getters y setters
     public Long getId() {
@@ -36,12 +36,12 @@ public class Proyecto {
         this.nombre = nombre;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getEstatus() { // Getter para estatus
+        return estatus;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setEstatus(String estatus) { // Setter para estatus
+        this.estatus = estatus;
     }
 
     public Date getFechaInicio() {
