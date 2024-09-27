@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProyectoService {
@@ -20,9 +21,11 @@ public class ProyectoService {
     }
 
     // Listar todos los proyectos
-    public Iterable<Proyecto> listarTodosLosProyectos() {
-        return proyectoRepository.findAll();
+    public List<Proyecto> findAll() {
+    return proyectoRepository.findAll(); // This should return a List directly if using Spring Data JPA
     }
+
+    
 
     // Actualizar un proyecto existente
     public Proyecto actualizarProyecto(Long id, Proyecto proyecto) {

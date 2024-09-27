@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class TareaService {
@@ -23,9 +24,12 @@ public class TareaService {
         return tareaRepository.save(tarea);
     }
 
-    // Listar todas las tareas
     public Iterable<Tarea> listarTodasLasTareas() {
-        return tareaRepository.findAll();
+    return tareaRepository.findAll();
+    }
+
+    public List<Tarea> findAll() {
+    return tareaRepository.findAll();
     }
 
     // Actualizar una tarea existente

@@ -4,7 +4,15 @@ import com.springboot.MyTodoList.model.Tarea;
 import com.springboot.MyTodoList.service.TareaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tareas")
@@ -12,6 +20,12 @@ public class TareaController {
 
     @Autowired
     private TareaService tareaService;
+
+    @GetMapping
+    public ResponseEntity<List<Tarea>> getAllTasks() {
+        List<Tarea> tasks = tareaService.findAll();
+        return ResponseEntity.ok().body(tasks);
+    }
 
     // Crear una nueva tarea
     @PostMapping("/crear")
