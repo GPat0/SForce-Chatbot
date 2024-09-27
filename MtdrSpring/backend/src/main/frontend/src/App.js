@@ -36,6 +36,10 @@ function App() {
     // In case of an error during the API call:
     const [error, setError] = useState();
 
+    const [editingItem, setEditingItem] = useState(null); // Para almacenar el ítem que estás editando
+    const [newDescription, setNewDescription] = useState(""); // Para almacenar el nuevo valor de la descripción
+
+
     function deleteItem(deleteId) {
       // console.log("deleteItem("+deleteId+")")
       fetch(API_LIST+"/"+deleteId, {
@@ -68,6 +72,22 @@ function App() {
         (error) => { setError(error); }
       );
     }
+    function handleEditClick(item) {
+      setEditingItem(item);
+      setNewDescription(item.description); // Inicia el formulario con la descripción actual
+    }
+    function handleSaveEdit(event) {
+      event.preventDefault();
+      if (editingItem) {
+        modifyItem(editingItem.id, newDescription, editingItem.done).then(
+          (result) => {
+            reloadOneIteam(editingItem.id);
+            setEditingItem(null); // Restablece el estado después de la edición
+          },
+          (error) => setError(error)
+        );
+      }
+    }        
     function reloadOneIteam(id){
       fetch(API_LIST+"/"+id)
         .then(response => {
@@ -196,20 +216,45 @@ function App() {
         { !isLoading &&
         <div id="maincontent">
         <table id="itemlistNotDone" className="itemlist">
-          <TableBody>
-          {items.map(item => (
-            !item.done && (
-            <tr key={item.id}>
-              <td className="description">{item.description}</td>
-              { /*<td>{JSON.stringify(item, null, 2) }</td>*/ }
-              <td className="date"><Moment format="MMM Do hh:mm:ss">{item.createdAt}</Moment></td>
-              <td><Button variant="contained" className="DoneButton" onClick={(event) => toggleDone(event, item.id, item.description, !item.done)} size="small">
-                    Done
-                  </Button></td>
-            </tr>
-          )))}
-          </TableBody>
-        </table>
+  <TableBody>
+    {items.map(item => (
+      !item.done && (
+        <tr key={item.id}>
+          <td className="description">
+            {editingItem && editingItem.id === item.id ? (
+              <input
+                type="text"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+              />
+            ) : (
+              item.description
+            )}
+          </td>
+          <td className="date">
+            <Moment format="MMM Do hh:mm:ss">{item.createdAt}</Moment>
+          </td>
+          <td>
+            {editingItem && editingItem.id === item.id ? (
+              <Button variant="contained" onClick={handleSaveEdit} size="small">
+                Guardar
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={() => handleEditClick(item)} size="small">
+                Editar
+              </Button>
+            )}
+          </td>
+          <td>
+            <Button variant="contained" className="DoneButton" onClick={(event) => toggleDone(event, item.id, item.description, !item.done)} size="small">
+              Done
+            </Button>
+          </td>
+        </tr>
+      )
+    ))}
+  </TableBody>
+</table>
         <h2 id="donelist">
           Done items
         </h2>
