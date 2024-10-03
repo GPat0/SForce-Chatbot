@@ -55,3 +55,4 @@ MtdrSpring/backend/src/main/resources/application.properties
 *.properties
 MtdrSpring/backend/Dockerfile
 MtdrSpring/backend/src/main/resources/application.properties
+MtdrSpring/backend/src/main/resources/application.properties
