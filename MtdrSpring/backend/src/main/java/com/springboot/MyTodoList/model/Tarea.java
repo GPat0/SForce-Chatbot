@@ -4,98 +4,117 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "TASK") // Ensure this is the correct schema and table name
 public class Tarea {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private Long id;
+
+    @Column(name = "DESCRIPTION")
     private String descripcion;
-    private String estatus;  // Corresponde a "Status" en el diagrama
-    private Float tiempoEstimado;  // Corresponde a "EstimatedTime" en el diagrama
-    private Float tiempoReal;  // Corresponde a "ActualTime" en el diagrama
-    private Date fechaFinalizacion;  // Corresponde a "CompletionDate" en el diagrama
-    private Integer puntuacionCalidad;  // Corresponde a "QualityScore" en el diagrama
-    private Float eficienciaTarea;  // Corresponde a "TaskEfficiency" en el diagrama
-    private Float productividadTarea;  // Corresponde a "TaskProductivity" en el diagrama
+
+    @Column(name = "STATUS")
+    private String estatus;
+
+    @Column(name = "ESTIMATEDTIME")
+    private Float tiempoEstimado;
+
+    @Column(name = "ACTUALTIME")
+    private Float tiempoReal;
+
+    @Column(name = "COMPLETIONDATE")
+    private Date fechaFinalizacion;
+
+    @Column(name = "QUALITYSCORE")
+    private Integer puntuacionCalidad;
+
+    @Column(name = "TASKEFFICIENCY")
+    private Float eficienciaTarea;
+
+    @Column(name = "TASKPRODUCTIVITY")
+    private Float productividadTarea;
 
     @ManyToOne
-    @JoinColumn(name = "proyecto_id", nullable = false)
+    @JoinColumn(name = "PROJECTID", nullable = false)
     private Proyecto proyecto;
 
-    // Getters y setters
+    // Getters
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getDescripcion() {
         return descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public String getEstatus() {
         return estatus;
-    }
-
-    public void setEstatus(String estatus) {
-        this.estatus = estatus;
     }
 
     public Float getTiempoEstimado() {
         return tiempoEstimado;
     }
 
-    public void setTiempoEstimado(Float tiempoEstimado) {
-        this.tiempoEstimado = tiempoEstimado;
-    }
-
     public Float getTiempoReal() {
         return tiempoReal;
-    }
-
-    public void setTiempoReal(Float tiempoReal) {
-        this.tiempoReal = tiempoReal;
     }
 
     public Date getFechaFinalizacion() {
         return fechaFinalizacion;
     }
 
-    public void setFechaFinalizacion(Date fechaFinalizacion) {
-        this.fechaFinalizacion = fechaFinalizacion;
-    }
-
     public Integer getPuntuacionCalidad() {
         return puntuacionCalidad;
-    }
-
-    public void setPuntuacionCalidad(Integer puntuacionCalidad) {
-        this.puntuacionCalidad = puntuacionCalidad;
     }
 
     public Float getEficienciaTarea() {
         return eficienciaTarea;
     }
 
-    public void setEficienciaTarea(Float eficienciaTarea) {
-        this.eficienciaTarea = eficienciaTarea;
-    }
-
     public Float getProductividadTarea() {
         return productividadTarea;
     }
 
-    public void setProductividadTarea(Float productividadTarea) {
-        this.productividadTarea = productividadTarea;
-    }
-
     public Proyecto getProyecto() {
         return proyecto;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
+
+    public void setTiempoEstimado(Float tiempoEstimado) {
+        this.tiempoEstimado = tiempoEstimado;
+    }
+
+    public void setTiempoReal(Float tiempoReal) {
+        this.tiempoReal = tiempoReal;
+    }
+
+    public void setFechaFinalizacion(Date fechaFinalizacion) {
+        this.fechaFinalizacion = fechaFinalizacion;
+    }
+
+    public void setPuntuacionCalidad(Integer puntuacionCalidad) {
+        this.puntuacionCalidad = puntuacionCalidad;
+    }
+
+    public void setEficienciaTarea(Float eficienciaTarea) {
+        this.eficienciaTarea = eficienciaTarea;
+    }
+
+    public void setProductividadTarea(Float productividadTarea) {
+        this.productividadTarea = productividadTarea;
     }
 
     public void setProyecto(Proyecto proyecto) {

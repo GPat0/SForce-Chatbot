@@ -24,10 +24,6 @@ public class TareaService {
         return tareaRepository.save(tarea);
     }
 
-    public Iterable<Tarea> listarTodasLasTareas() {
-    return tareaRepository.findAll();
-    }
-
     public List<Tarea> findAll() {
     return tareaRepository.findAll();
     }

@@ -38,11 +38,6 @@ public class TareaController {
         }
     }
 
-    // Listar todas las tareas
-    @GetMapping("/listar")
-    public ResponseEntity<Iterable<Tarea>> listarTareas() {
-        return ResponseEntity.ok(tareaService.listarTodasLasTareas());
-    }
 
     // Actualizar una tarea existente
     @PutMapping("/actualizar/{id}")
