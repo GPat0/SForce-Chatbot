@@ -39,6 +39,22 @@ public class Tarea {
     @JoinColumn(name = "PROJECTID", nullable = false)
     private Proyecto proyecto;
 
+    public Tarea(Long id, String descripcion, String estatus, Float tiempoEstimado, Float tiempoReal, Date fechaFinalizacion, Integer puntuacionCalidad, Float eficienciaTarea, Float productividadTarea, Proyecto proyecto) {
+        this.id = id;
+        this.descripcion = descripcion;
+        this.estatus = estatus;
+        this.tiempoEstimado = tiempoEstimado;
+        this.tiempoReal = tiempoReal;
+        this.fechaFinalizacion = fechaFinalizacion;
+        this.puntuacionCalidad = puntuacionCalidad;
+        this.eficienciaTarea = eficienciaTarea;
+        this.productividadTarea = productividadTarea;
+        this.proyecto = proyecto;
+    }
+
+    public Tarea() {
+
+    }
     // Getters
     public Long getId() {
         return id;

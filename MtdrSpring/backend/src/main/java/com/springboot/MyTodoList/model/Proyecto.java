@@ -5,19 +5,41 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "PROJECT") // Specify the correct table name and schema
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID") // Ensure the column name matches exactly with DB schema
     private Long id;
+
+    @Column(name = "NAME") // Match the column name for 'NAME'
     private String nombre;
-    private String estatus; // Agregado para reflejar el campo en el diagrama
+
+    @Column(name = "STATUS", length = 50) // Match the column name for 'STATUS' and specify length
+    private String estatus;
+
     @Temporal(TemporalType.DATE)
+    @Column(name = "START_DATE") // Match the column name for 'START_DATE'
     private Date fechaInicio;
+
     @Temporal(TemporalType.DATE)
+    @Column(name = "END_DATE") // Match the column name for 'END_DATE'
     private Date fechaFin;
 
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Tarea> tareas; // Configuración para manejo de las tareas como parte del proyecto
+
+    public Proyecto() {
+    }
+
+    public Proyecto(Long id, String nombre, String estatus, Date fechaInicio, Date fechaFin, List<Tarea> tareas) {
+        this.id = id;
+        this.nombre = nombre;
+        this.estatus = estatus;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.tareas = tareas;
+    }
 
     // Getters y setters
     public Long getId() {
@@ -36,11 +58,11 @@ public class Proyecto {
         this.nombre = nombre;
     }
 
-    public String getEstatus() { // Getter para estatus
+    public String getEstatus() {
         return estatus;
     }
 
-    public void setEstatus(String estatus) { // Setter para estatus
+    public void setEstatus(String estatus) {
         this.estatus = estatus;
     }
 

@@ -85,7 +85,7 @@ function App() {
       setLoading(true);
       Promise.all([
         fetch(API_LIST),  // Existing endpoint for ToDo items
-        fetch('/api/projects'),  // New endpoint for Projects
+        fetch('/api/proyectos'),  // New endpoint for Projects
         fetch('/api/tareas')  // New endpoint for Tasks
       ]).then(async ([responseItems, responseProjects, responseTasks]) => {
         if (!responseItems.ok || !responseProjects.ok || !responseTasks.ok) {
