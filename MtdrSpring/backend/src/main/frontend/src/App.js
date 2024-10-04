@@ -103,7 +103,7 @@ function App() {
         setError(error);
       });
     }, []);
-
+    
     function addItem(text){
       console.log("addItem("+text+")")
       setInserting(true);
@@ -145,37 +145,50 @@ function App() {
         { error &&
           <p>Error: {error.message}</p>
         }
-        { isLoading && <CircularProgress /> }
+        { isLoading &&
+          <CircularProgress />
+        }
         { !isLoading &&
         <div id="maincontent">
-          {/* Existing tables and UI for ToDo items */}
-          <h2>Projects</h2>
-          <table className="itemlist">
-            <TableBody>
-            {projects.map(project => (
-              <tr key={project.id}>
-                <td>{project.name}</td>
-                <td><Moment format="YYYY-MM-DD">{project.startDate}</Moment></td>
-                <td><Moment format="YYYY-MM-DD">{project.endDate}</Moment></td>
-              </tr>
-            ))}
-            </TableBody>
-          </table>
+        <table id="itemlistNotDone" className="itemlist">
+          <TableBody>
+          {items.map(item => (
+            !item.done && (
+            <tr key={item.id}>
+              <td className="description">{item.description}</td>
+              { /*<td>{JSON.stringify(item, null, 2) }</td>*/ }
+              <td className="date"><Moment format="MMM Do hh:mm:ss">{item.createdAt}</Moment></td>
+              <td><Button variant="contained" className="DoneButton" onClick={(event) => toggleDone(event, item.id, item.description, !item.done)} size="small">
+                    Done
+                  </Button></td>
+            </tr>
+          )))}
+          </TableBody>
+        </table>
+        <h2 id="donelist">
+          Done items
+        </h2>
+        <table id="itemlistDone" className="itemlist">
+          <TableBody>
+          {items.map(item => (
+            item.done && (
 
-          <h2>Tasks</h2>
-          <table className="itemlist">
-            <TableBody>
-            {tasks.map(task => (
-              <tr key={task.id}>
-                <td>{task.description}</td>
-                <td><Moment format="YYYY-MM-DD">{task.dueDate}</Moment></td>
-                <td>{task.status}</td>
-              </tr>
-            ))}
-            </TableBody>
-          </table>
+            <tr key={item.id}>
+              <td className="description">{item.description}</td>
+              <td className="date"><Moment format="MMM Do hh:mm:ss">{item.createdAt}</Moment></td>
+              <td><Button variant="contained" className="DoneButton" onClick={(event) => toggleDone(event, item.id, item.description, !item.done)} size="small">
+                    Undo
+                  </Button></td>
+              <td><Button startIcon={<DeleteIcon />} variant="contained" className="DeleteButton" onClick={() => deleteItem(item.id)} size="small">
+                    Delete
+                  </Button></td>
+            </tr>
+          )))}
+          </TableBody>
+        </table>
         </div>
         }
+
       </div>
     );
 }
