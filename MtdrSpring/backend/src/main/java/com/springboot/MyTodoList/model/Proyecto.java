@@ -3,6 +3,7 @@ package com.springboot.MyTodoList.model;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "PROJECT") // Specify the correct table name and schema
@@ -27,6 +28,7 @@ public class Proyecto {
     private Date fechaFin;
 
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Tarea> tareas; // Configuración para manejo de las tareas como parte del proyecto
 
     public Proyecto() {
