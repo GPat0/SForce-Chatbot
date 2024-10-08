@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.http.ResponseEntity;
+import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+
+
 
 @RestController
 @RequestMapping("/api/proyectos")
@@ -26,61 +30,35 @@ public class ProyectoController {
     private ProyectoService proyectoService;
 
     @GetMapping
-    public ResponseEntity<List<Proyecto>> getAllProjects() {
-        List<Proyecto> projects = proyectoService.findAll();
-        return ResponseEntity.ok().body(projects);
+    public List<Proyecto> getAllProjects() {
+        return proyectoService.findAll();
     }
 
-    // Crear un nuevo proyecto
-    @PostMapping("/crear")
-    public ResponseEntity<Proyecto> crearProyecto(@RequestBody Proyecto proyecto) {
-        try {
-            Proyecto nuevoProyecto = proyectoService.crearProyecto(proyecto);
-            return ResponseEntity.ok(nuevoProyecto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    @PostMapping
+    public ResponseEntity<Proyecto> createProject(@Valid @RequestBody Proyecto proyecto) {
+        Proyecto nuevoProyecto = proyectoService.crearProyecto(proyecto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProyecto);
     }
 
-    // Listar todos los proyectos
-    @GetMapping("/listar")
-    public ResponseEntity<List<Proyecto>> listarProyectos() {
-    Iterable<Proyecto> iterableProjects = proyectoService.findAll();
-    List<Proyecto> projects = StreamSupport.stream(iterableProjects.spliterator(), false)
-                                           .collect(Collectors.toList());
-    return ResponseEntity.ok().body(projects);
+    @GetMapping("/{id}")
+    public ResponseEntity<Proyecto> getProjectById(@PathVariable Long id) {
+        return proyectoService.obtenerProyectoPorId(id)
+                              .map(ResponseEntity::ok)
+                              .orElse(ResponseEntity.notFound().build());
     }
 
-    // Actualizar un proyecto existente
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Proyecto> actualizarProyecto(@PathVariable Long id, @RequestBody Proyecto proyecto) {
-        try {
-            Proyecto proyectoActualizado = proyectoService.actualizarProyecto(id, proyecto);
-            return ResponseEntity.ok(proyectoActualizado);
-        } catch (Exception e) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Proyecto> updateProject(@PathVariable Long id, @Valid @RequestBody Proyecto proyecto) {
+        return proyectoService.actualizarProyecto(id, proyecto)
+                              .map(ResponseEntity::ok)
+                              .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+        if (!proyectoService.eliminarProyecto(id)) {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    // Eliminar un proyecto
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminarProyecto(@PathVariable Long id) {
-        try {
-            proyectoService.eliminarProyecto(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // Obtener un proyecto por ID
-    @GetMapping("/obtener/{id}")
-    public ResponseEntity<Proyecto> obtenerProyectoPorId(@PathVariable Long id) {
-        Proyecto proyecto = proyectoService.obtenerProyectoPorId(id);
-        if (proyecto != null) {
-            return ResponseEntity.ok(proyecto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().build();
     }
 }
