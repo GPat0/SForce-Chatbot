@@ -12,7 +12,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.springboot.MyTodoList.controller.ToDoItemBotController;
+
+import com.springboot.MyTodoList.model.Proyecto;
+import com.springboot.MyTodoList.model.Tarea;
+import com.springboot.MyTodoList.model.ToDoItem;
+
+import com.springboot.MyTodoList.service.ProyectoService;
+import com.springboot.MyTodoList.service.TareaService;
 import com.springboot.MyTodoList.service.ToDoItemService;
+
 import com.springboot.MyTodoList.util.BotMessages;
 
 @SpringBootApplication

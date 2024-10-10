@@ -63,6 +63,8 @@ public class ToDoItemBotController extends TelegramLongPollingBot {
 				KeyboardRow row = new KeyboardRow();
 				row.add(BotLabels.LIST_ALL_ITEMS.getLabel());
 				row.add(BotLabels.ADD_NEW_ITEM.getLabel());
+				row.add(BotLabels.LIST_PROJECTS.getLabel());
+				row.add(BotLabels.LIST_TASKS.getLabel());
 				// Add the first row to the keyboard
 				keyboard.add(row);
 
@@ -239,12 +241,12 @@ public class ToDoItemBotController extends TelegramLongPollingBot {
 	}
 
 	@Override
-	public String getBotUsername() {		
+	public String getBotUsername() {
 		return botName;
 	}
 
 	// GET /todolist
-	public List<ToDoItem> getAllToDoItems() { 
+	public List<ToDoItem> getAllToDoItems() {
 		return toDoItemService.findAll();
 	}
 
