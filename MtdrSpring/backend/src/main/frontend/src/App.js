@@ -1,489 +1,232 @@
-/*
-## MyToDoReact version 1.0.
-##
-## Copyright (c) 2022 Oracle, Inc.
-## Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-*/
-/*
- * This is the application main React component. We're using "function"
- * components in this application. No "class" components should be used for
- * consistency.
- * @author  jean.de.lavarene@oracle.com
- */
-import React, { useState, useEffect } from "react";
-import NewItem from "./NewItem";
-import NewProject from "./NewProject";
-import API_LIST from "./API";
+import React, { useState, useEffect } from 'react';
+import { CircularProgress, TableBody, Table, TableRow, TableCell, TableContainer, Paper, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import Moment from 'react-moment';
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, TableBody, CircularProgress } from "@mui/material";
-import Moment from "react-moment";
+import AddIcon from "@mui/icons-material/Add";
 
-/* In this application we're using Function Components with the State Hooks
- * to manage the states. See the doc: https://reactjs.org/docs/hooks-state.html
- * This App component represents the entire app. It renders a NewItem component
- * and two tables: one that lists the todo items that are to be done and another
- * one with the items that are already done.
- */
 function App() {
-  const [isLoading, setLoading] = useState(false);
-  const [isInserting, setInserting] = useState(false);
-  const [items, setItems] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [error, setError] = useState();
+    const [isLoading, setLoading] = useState(false);
+    const [tareas, setTareas] = useState([]);
+    const [error, setError] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [currentTarea, setCurrentTarea] = useState(null);
+    const [selectedTarea, setSelectedTarea] = useState(null);
 
-  function deleteItem(deleteId) {
-    fetch(API_LIST + "/" + deleteId, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        () => {
-          const remainingItems = items.filter((item) => item.id !== deleteId);
-          setItems(remainingItems);
-        },
-        (error) => {
-          setError(error);
-        }
-      );
-  }
-
-  function toggleDone(event, id, description, done) {
-    event.preventDefault();
-    modifyItem(id, description, done).then(
-      () => reloadOneIteam(id),
-      (error) => setError(error)
-    );
-  }
-
-  function reloadOneIteam(id) {
-    fetch(API_LIST + "/" + id)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("La cagaste");
-        }
-      })
-      .then(
-        (result) => {
-          const items2 = items.map((x) =>
-            x.id === id
-              ? {
-                  ...x,
-                  description: result.description,
-                  done: result.done,
+    useEffect(() => {
+        setLoading(true);
+        fetch('/api/tareas')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch tareas');
                 }
-              : x
-          );
-          setItems(items2);
-        },
-        (error) => setError(error)
-      );
-  }
+                return response.json();
+            })
+            .then(data => {
+                setTareas(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error.message);
+                setLoading(false);
+            });
+    }, []);
 
-  function reloadOneProject(id) {
-    fetch(API_LIST + "/" + id)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("La cagaste");
-        }
-      })
-      .then(
-        (result) => {
-          const project2 = projects.map((x) =>
-            x.id === id
-              ? {
-                  ...x,
-                  description: result.description,
-                  done: result.done,
+    const handleOpenDialog = (tarea = null) => {
+        setCurrentTarea(tarea);
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setCurrentTarea(null);
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setCurrentTarea({ ...currentTarea, [name]: value });
+    };
+
+    const handleSubmit = () => {
+        const url = '/api/tareas';
+        const method = currentTarea && currentTarea.id ? 'PUT' : 'POST';
+        const id = currentTarea && currentTarea.id ? `/${currentTarea.id}` : '';
+
+        fetch(`${url}${id}`, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(currentTarea),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (method === 'POST') {
+                    setTareas([...tareas, data]);
+                } else {
+                    setTareas(tareas.map(t => t.id === data.id ? data : t));
                 }
-              : x
-          );
-          setProjects(project2);
-        },
-        (error) => setError(error)
-      );
-  }
+                handleCloseDialog();
+            })
+            .catch(error => setError(error.message));
+    };
 
-  function modifyItem(id, description, done) {
-    const data = { description, done };
-    return fetch(API_LIST + "/" + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((response) => {
-      if (response.ok) {
-        return response;
-      } else {
-        throw new Error("Something went wrong ...");
-      }
-    });
-  }
+    const handleDelete = (id) => {
+        fetch(`/api/tareas/${id}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                setTareas(tareas.filter(t => t.id !== id));
+                if (selectedTarea && selectedTarea.id === id) {
+                    setSelectedTarea(null);
+                }
+            })
+            .catch(error => setError(error.message));
+    };
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(API_LIST)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          setLoading(false);
-          setItems(result);
-        },
-        (error) => {
-          setLoading(false);
-          setError(error);
-        }
-      );
-  }, []);
+    const handleSelectTarea = (tarea) => {
+        setSelectedTarea(tarea);
+    };
 
-  function addProject(text) {
-    setInserting(true);
-    const data = { description: text };
-
-    fetch(API_LIST, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const id = result.headers.get("location");
-          const newProject = { id, description: text };
-          setProjects([newProject, ...projects]);
-          setInserting(false);
-        },
-        (error) => {
-          setInserting(false);
-          setError(error);
-        }
-      );
-  }
-
-  function addItem(text) {
-    setInserting(true);
-    const data = { description: text };
-
-    fetch(API_LIST, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response;
-        } else {
-          throw new Error("Something went wrong ...");
-        }
-      })
-      .then(
-        (result) => {
-          const id = result.headers.get("location");
-          const newItem = { id, description: text };
-          setItems([newItem, ...items]);
-          setInserting(false);
-        },
-        (error) => {
-          setInserting(false);
-          setError(error);
-        }
-      );
-  }
-
-  return (
-    <div className="App" style={{ display: "flex", flexDirection: "column" }}>
-      <header>
-        <div className="logo" style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src="https://logos-world.net/wp-content/uploads/2020/09/Oracle-Logo.png"
-            alt="Oracle Logo"
-            style={{ width: "100px", height: "auto" }}
-          />
-        </div>
-        <h3>Oracle Todo App</h3>
-      </header>
-
-      <div>
-        {/* Projects Section (Left) */}
-        <aside className="projects">
-          <div id="mainprojects">
-            <h3>Proyectos</h3>
-            <NewProject addProject={addProject} isInserting={isInserting} />
-
-            {error && <p>Error: {error.message}</p>}
-            {isLoading && <CircularProgress />}
-            {!isLoading && (
-              <div>
-                <div>
-                  <table id="ProjectlistNotDone" className="Projectlist">
-                    <TableBody>
-                      {projects.map(
-                        (project) =>
-                          !project.done && (
-                            <tr key={project.id}>
-                              <td className="description">
-                                {project.description}
-                              </td>
-                              <td className="date">
-                                <Moment format="MMM Do hh:mm:ss">
-                                  {project.createdAt}
-                                </Moment>
-                              </td>
-                              <td>
-                                <Button
-                                  variant="contained"
-                                  className="DoneButton"
-                                  onClick={(event) =>
-                                    toggleDone(
-                                      event,
-                                      project.id,
-                                      project.description,
-                                      !project.done
-                                    )
-                                  }
-                                  size="small"
-                                  style={{
-                                    backgroundColor: "green", // Color de fondo
-                                    color: "white", // Color de texto
-                                    borderRadius: "12px", // Bordes redondeados
-                                    borderBottom: "1px solid #ddd",
-                                  }}
-                                >
-                                  Hecho
-                                </Button>
-                              </td>
-                            </tr>
-                          )
-                      )}
-                    </TableBody>
-                  </table>
+    return (
+        <div className="App" style={{ display: "flex", flexDirection: "column" }}>
+            <header>
+                <div className="logo" style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                        src="https://logos-world.net/wp-content/uploads/2020/09/Oracle-Logo.png"
+                        alt="Oracle Logo"
+                        style={{ width: "100px", height: "auto" }}
+                    />
                 </div>
+                <h3>Oracle Todo App</h3>
+            </header>
 
-                <div id="ProjectStatus">
-                  <p>
-                    <strong>ESTATUS:</strong> En Progreso
-                  </p>
-                  <p>
-                    <strong>FECHA INICIO:</strong> 7/5/2024
-                  </p>
-                  <p>
-                    <strong>FECHA FINAL:</strong> 12/1/2024
-                  </p>
-                </div>
+            <div style={{ display: "flex" }}>
+                {/* Projects Section (Left) */}
+                <aside className="projects" style={{ width: "20%", padding: "20px" }}>
+                    {/* Project list would go here */}
+                </aside>
 
-                <div
-                  id="ProjectMembers"
-                  style={{
-                    height: "30%",
-                    overflow: "auto",
-                    border: "1px solid #ddd",
-                    backgroundColor: "#EBEBEB",
-                  }}
-                >
-                  <h4>Miembros y Roles</h4>
-                  <p>Jorge Mata - Developer</p>
-                  <p>Pablo Sepulveda - Scrum Master</p>
-                  <p>Baruc Ramirez - Product Owner</p>
-                  <p>Gael Gaytan - Developer</p>
-                  <p>Luis Cabral - Developer</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </aside>
+                {/* Tasks List (Center) */}
+                <main style={{ width: "60%", padding: "20px" }}>
+                    <div id="TaskList">
+                        <h3>Lista de Tareas</h3>
+                        <Button
+                            onClick={() => handleOpenDialog()}
+                            variant="contained"
+                            style={{ backgroundColor: "green", color: "white" }}
+                            startIcon={<AddIcon />}
+                        >
+                            Agregar Nueva Tarea
+                        </Button>
+                        {error && <Typography color="error">{error}</Typography>}
+                        {isLoading ? <CircularProgress /> : (
+                            <TableContainer component={Paper}>
+                                <Table aria-label="Tabla de Tareas">
+                                    <TableBody>
+                                        {tareas.map(tarea => (
+                                            <TableRow key={tarea.id} onClick={() => handleSelectTarea(tarea)} style={{cursor: 'pointer'}}>
+                                                <TableCell className="description">{tarea.descripcion}</TableCell>
+                                                <TableCell>{tarea.estatus}</TableCell>
+                                                <TableCell>
+                                                    <Moment format="MMM Do hh:mm:ss">{tarea.fechaFinalizacion}</Moment>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="contained"
+                                                        className="DoneButton"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleOpenDialog(tarea);
+                                                        }}
+                                                        size="small"
+                                                        style={{
+                                                            backgroundColor: "green",
+                                                            color: "white",
+                                                            borderRadius: "12px",
+                                                            marginRight: "5px"
+                                                        }}
+                                                    >
+                                                        Editar
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        className="delete"
+                                                        size="small"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDelete(tarea.id);
+                                                        }}
+                                                        style={{
+                                                            backgroundColor: "red",
+                                                            color: "white",
+                                                            borderRadius: "12px"
+                                                        }}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
+                    </div>
+                </main>
 
-        {/* Tasks List (Center) */}
-        <main>
-          <div id="TaskList">
-            <h3>Lista de Tareas</h3>
-            <NewItem addItem={addItem} isInserting={isInserting} />
-
-            {error && <p>Error: {error.message}</p>}
-            {isLoading && <CircularProgress />}
-            {!isLoading && (
-              <div>
-                <div id="maincontent">
-                  <table id="itemlistNotDone" className="itemlist">
-                    <TableBody>
-                      {items.map(
-                        (item) =>
-                          !item.done && (
-                            <tr key={item.id}>
-                              <td className="description">
-                                {item.description}
-                              </td>
-                              <td className="date">
-                                <Moment format="MMM Do hh:mm:ss">
-                                  {item.createdAt}
-                                </Moment>
-                              </td>
-                              <td>
-                                <Button
-                                  variant="contained"
-                                  className="DoneButton"
-                                  onClick={(event) =>
-                                    toggleDone(
-                                      event,
-                                      item.id,
-                                      item.description,
-                                      !item.done
-                                    )
-                                  }
-                                  size="small"
-                                  style={{
-                                    backgroundColor: "green",
-                                    color: "white",
-                                    borderRadius: "12px",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
-                                >
-                                  Hecho
-                                </Button>
-                              </td>
-                              <td>
-                                <Button
-                                  variant="contained"
-                                  className="delete"
-                                  size="small"
-                                  onClick={() => deleteItem(item.id)}
-                                  style={{
-                                    backgroundColor: "red",
-                                    color: "white",
-                                    borderRadius: "12px",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </Button>
-                              </td>
-                            </tr>
-                          )
-                      )}
-                    </TableBody>
-                  </table>
-                </div>
-
-                {/* Nuevo div para agrupar contenido */}
-                <div id="codigo" style={{ marginTop: "20px" }}>
-                  <h3>Ejemplo de Código:</h3>
-                  <pre>
-                    <code>
-                      {`function saludar(nombre) {
-                return "Hola, " + nombre + "!";
-              }
-              
-              console.log(saludar("Mundo"));`}
-                    </code>
-                  </pre>
-                </div>
-              </div>
-            )}
-          </div>
-        </main>
-
-        {/* Done Items (Right) */}
-        <aside className="doneItems">
-          <div className="task-details">
-            <h3>Detalles de la Tarea</h3>
-            <p>
-              <strong>ID:</strong> 1023
-            </p>
-            <p>
-              <strong>Sprint:</strong> 1
-            </p>
-            <p>
-              <strong>Descripción:</strong> Botones Telegram
-            </p>
-            <p>
-              <strong>Estatus:</strong> Incompleto
-            </p>
-            <p>
-              <strong>Tiempo Estimado:</strong> 3 días
-            </p>
-            <p>
-              <strong>Tiempo Invertido:</strong> 4 días
-            </p>
-            <p>
-              <strong>Fecha Entrega:</strong> 12/1/2024
-            </p>
-            <p>
-              <strong>Calidad:</strong> 85
-            </p>
-            <p>
-              <strong>Productividad:</strong> 0.85
-            </p>
-            <p>
-              <strong>Asignado a:</strong> Baruc Ramirez
-            </p>
-          </div>
-
-          <div className="review-section">
-            <h3>Review</h3>
-            <p>
-              <strong>Comentarios:</strong> Esta tarea se encuentra en progreso
-              y se espera su finalización en la fecha establecida.
-            </p>
-            <p>
-              <strong>Notas:</strong> Asegurarse de revisar las dependencias
-              antes de cerrar la tarea.
-            </p>
-          </div>
-          <div className="Items-Done">
-            <h3>Tareas Completadas</h3>
-
-            {isLoading && <CircularProgress />}
-            {!isLoading && (
-              <div className="Items-Donedone">
-                <table id="itemlistDone" className="itemlist">
-                  <TableBody>
-                    {items.map(
-                      (item) =>
-                        item.done && (
-                          <tr key={item.id}>
-                            <td className="description">{item.description}</td>
-                            <td className="date">
-                              <Moment format="MMM Do hh:mm:ss">
-                                {item.createdAt}
-                              </Moment>
-                            </td>
-                          </tr>
-                        )
+                {/* Task Details (Right) */}
+                <aside className="taskDetails" style={{ width: "20%", padding: "20px" }}>
+                    <h3>Detalles de la Tarea</h3>
+                    {selectedTarea ? (
+                        <div>
+                            <p><strong>Descripción:</strong> {selectedTarea.descripcion}</p>
+                            <p><strong>Estado:</strong> {selectedTarea.estatus}</p>
+                            <p><strong>Fecha de Finalización:</strong> <Moment format="MMM Do YYYY, hh:mm:ss">{selectedTarea.fechaFinalizacion}</Moment></p>
+                        </div>
+                    ) : (
+                        <p>Seleccione una tarea para ver sus detalles.</p>
                     )}
-                  </TableBody>
-                </table>
-              </div>
-            )}
-          </div>
-        </aside>
-      </div>
-    </div>
-  );
+                </aside>
+            </div>
+
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Detalles de la Tarea</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        name="descripcion"
+                        label="Descripción de la Tarea"
+                        type="text"
+                        fullWidth
+                        value={currentTarea?.descripcion || ''}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="estatus"
+                        label="Estado"
+                        type="text"
+                        fullWidth
+                        value={currentTarea?.estatus || ''}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="fechaFinalizacion"
+                        label="Fecha de Finalización"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        value={currentTarea?.fechaFinalizacion || ''}
+                        onChange={handleChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Cancelar</Button>
+                    <Button onClick={handleSubmit}>Guardar</Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
 }
 
 export default App;
