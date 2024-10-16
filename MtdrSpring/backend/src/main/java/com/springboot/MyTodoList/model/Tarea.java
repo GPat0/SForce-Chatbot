@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Table(name = "TASK") // Ensure this is the correct schema and table name
 public class Tarea {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 

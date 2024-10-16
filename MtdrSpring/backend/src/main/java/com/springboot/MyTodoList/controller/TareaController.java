@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import com.springboot.MyTodoList.dto.TareaDTO;
+import com.springboot.MyTodoList.model.Proyecto;
+import com.springboot.MyTodoList.repository.ProyectoRepository; // Import the ProyectoRepository
 
 @RestController
 @RequestMapping("/api/tareas")
@@ -16,6 +19,9 @@ public class TareaController {
 
     @Autowired
     private TareaService tareaService;
+
+    @Autowired
+    private ProyectoRepository proyectoRepository;
 
     // Get all tasks
     @GetMapping

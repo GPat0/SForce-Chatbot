@@ -1,6 +1,8 @@
 package com.springboot.MyTodoList.controller;
 
 import com.springboot.MyTodoList.model.Proyecto;
+import com.springboot.MyTodoList.model.Tarea;
+
 import com.springboot.MyTodoList.service.ProyectoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +15,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.http.ResponseEntity;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -35,9 +39,19 @@ public class ProyectoController {
     }
 
     @PostMapping
-    public ResponseEntity<Proyecto> createProject(@Valid @RequestBody Proyecto proyecto) {
-        Proyecto nuevoProyecto = proyectoService.crearProyecto(proyecto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProyecto);
+    public ResponseEntity createProject(@RequestBody Proyecto proyecto) throws Exception{
+        Integer i = 7;
+        //Long l = new Long(i);
+        //Proyecto newproject = new Proyecto(null, "test123", "Active", null, null, null);
+        //System.out.println("cagada");
+        Proyecto td = proyectoService.crearProyecto(proyecto);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("location",""+td.getId());
+        responseHeaders.set("Access-Control-Expose-Headers","location");
+        //URI location = URI.create(""+td.getID())
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders).build();
     }
 
     @GetMapping("/{id}")
