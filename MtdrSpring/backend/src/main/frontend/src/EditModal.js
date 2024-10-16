@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Select, MenuItem } from '@mui/material';
+
 
 const EditModal = ({ open, handleClose, item, saveChanges, type }) => {
   const [nombre, setNombre] = useState('');
@@ -62,14 +63,22 @@ const EditModal = ({ open, handleClose, item, saveChanges, type }) => {
         {type === 'project' ? (
           <>
             <TextField label="Nombre" fullWidth variant="standard" value={nombre} onChange={e => setNombre(e.target.value)} />
-            <TextField label="Estatus" fullWidth variant="standard" value={estatus} onChange={e => setEstatus(e.target.value)} />
+            <Select value={estatus} onChange={e => setEstatus(e.target.value)} displayEmpty fullWidth variant="standard">
+            <MenuItem value=""><em>None</em></MenuItem>
+            <MenuItem value="Active">In Progress</MenuItem>
+            <MenuItem value="Done">Done</MenuItem>
+            </Select>
             <TextField label="Fecha de Inicio" fullWidth variant="standard" type="date" InputLabelProps={{ shrink: true }} value={fechaInicio} onChange={e => setFechaInicio(e.target.value)} />
             <TextField label="Fecha de Fin" fullWidth variant="standard" type="date" InputLabelProps={{ shrink: true }} value={fechaFin} onChange={e => setFechaFin(e.target.value)} />
           </>
         ) : (
           <>
             <TextField label="Descripción" fullWidth variant="standard" value={descripcion} onChange={e => setDescripcion(e.target.value)} />
-            <TextField label="Estatus" fullWidth variant="standard" value={estatus} onChange={e => setEstatus(e.target.value)} />
+            <Select value={estatus} onChange={e => setEstatus(e.target.value)} displayEmpty fullWidth variant="standard">
+            <MenuItem value=""><em>None</em></MenuItem>
+            <MenuItem value="In Progress">In Progress</MenuItem>
+            <MenuItem value="Done">Done</MenuItem>
+            </Select>
             <TextField label="Tiempo Estimado" fullWidth variant="standard" value={tiempoEstimado} onChange={e => setTiempoEstimado(e.target.value)} />
             <TextField label="Tiempo Real" fullWidth variant="standard" value={tiempoReal} onChange={e => setTiempoReal(e.target.value)} />
             <TextField label="Fecha de Finalización" fullWidth variant="standard" type="date" InputLabelProps={{ shrink: true }} value={fechaFinalizacion} onChange={e => setFechaFinalizacion(e.target.value)} />

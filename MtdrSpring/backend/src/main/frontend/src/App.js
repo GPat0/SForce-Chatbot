@@ -59,6 +59,7 @@ function App() {
 
   // Function to handle saving changes
   const saveItemChanges = (item) => {
+    console.log(item.id)
     const apiUrl = item.id && currentEditType === 'project' ? `${API_PROYECTOS}/${item.id}` : `${API_TAREAS}/${item.id}`;
     fetch(apiUrl, {
       method: "PUT",
@@ -79,7 +80,7 @@ function App() {
     };
 
   function deleteItem(deleteId) {
-    fetch(API_LIST + "/" + deleteId, {
+    fetch(API_TAREAS + "/" + deleteId, {
       method: "DELETE",
     })
       .then((response) => {
@@ -93,6 +94,28 @@ function App() {
         () => {
           const remainingItems = items.filter((item) => item.id !== deleteId);
           setItems(remainingItems);
+        },
+        (error) => {
+          setError(error);
+        }
+      );
+  }
+
+  function deleteProyect(deleteId) {
+    fetch(API_PROYECTOS + "/" + deleteId, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response;
+        } else {
+          throw new Error("Something went wrong ...");
+        }
+      })
+      .then(
+        () => {
+          const remainingProjects = projects.filter((project) => project.id !== deleteId);
+          setItems(remainingProjects);
         },
         (error) => {
           setError(error);
@@ -192,16 +215,16 @@ function App() {
   };
 
   // Function to load tasks
-  const loadTasks = (projectId) => {
+  const loadTasks = () => {
     setLoading(true);
-    fetch(`/api/tareas/${projectId}`) // Adjust this URL to match your API endpoint
+    fetch("/api/tareas") // Adjust this URL to match your API endpoint
       .then((response) => response.json())
       .then((data) => {
-        setItems(data);
+        setProjects(data);
         setLoading(false);
       })
       .catch((error) => {
-        setError("Failed to load tasks: " + error.message);
+        setError("Failed to load projects: " + error.message);
         setLoading(false);
       });
   };
@@ -355,23 +378,17 @@ function App() {
                                 <td>
                                     <Button
                                     variant="contained"
-                                    className="DoneButton"
-                                    onClick={(event) =>
-                                        toggleDone(
-                                        event,
-                                        project.id,
-                                        project.nombre,
-                                        )
-                                    }
+                                    className="delete"
                                     size="small"
+                                    onClick={() => deleteProyect(project.id)}
                                     style={{
-                                        backgroundColor: "green",
+                                        backgroundColor: "red",
                                         color: "white",
                                         borderRadius: "12px",
                                         borderBottom: "1px solid #ddd",
                                     }}
                                     >
-                                    Hecho
+                                    <DeleteIcon />
                                     </Button>
                                 </td>
                                 </tr>
@@ -419,29 +436,6 @@ function App() {
                                     style={{ backgroundColor: "blue", color: "white" }}
                                     >
                                     Edit
-                                    </Button>
-                                </td>
-                                <td>
-                                    <Button
-                                    variant="contained"
-                                    className="DoneButton"
-                                    onClick={(event) =>
-                                        toggleDone(
-                                        event,
-                                        item.id,
-                                        item.descripcion,
-                                        true
-                                        )
-                                    }
-                                    size="small"
-                                    style={{
-                                        backgroundColor: "green",
-                                        color: "white",
-                                        borderRadius: "12px",
-                                        borderBottom: "1px solid #ddd",
-                                    }}
-                                    >
-                                    Hecho
                                     </Button>
                                 </td>
                                 <td>
@@ -497,41 +491,33 @@ function App() {
               <strong>Calidad:</strong> {taskExp.puntuacionCalidad}
             </p>
           </div>
-
-          <div className="review-section">
-            <h3>Review</h3>
-            <p>
-              <strong>Comentarios:</strong> Esta tarea se encuentra en progreso
-              y se espera su finalización en la fecha establecida.
-            </p>
-            <p>
-              <strong>Notas:</strong> Asegurarse de revisar las dependencias
-              antes de cerrar la tarea.
-            </p>
-          </div>
           <div className="Items-Done">
             <h3>Tareas Completadas</h3>
-
-            {isLoading && <CircularProgress />}
-            {!isLoading && (
-              <div className="Items-Donedone">
-                <table id="itemlistDone" className="itemlist">
-                  <TableBody>
-                    {items.map(
-                      (item) =>
-                        item.done && (
-                          <tr key={item.id}>
-                            <td className="description">{item.description}</td>
-                            <td className="date">
-                              <Moment format="MMM Do hh:mm:ss">
-                                {item.createdAt}
-                              </Moment>
-                            </td>
-                          </tr>
-                        )
-                    )}
-                  </TableBody>
-                </table>
+                {error && <p>Error: {error.message}</p>}
+                {isLoading && <CircularProgress />}
+                {!isLoading && currentProjectId && (
+                <div>
+                    <div id="maincontent">
+                    <table id="itemlistNotDone" className="itemlist">
+                        <TableBody>
+                        {items.map(
+                            (item) =>
+                            item.estatus === "Done" && (
+                                <tr key={item.id}>
+                                <td className="description">
+                                    {item.descripcion}
+                                </td>
+                                <td className="date">
+                                    <Moment format="MMM Do hh:mm:ss">
+                                    {item.fechaFinalizacion}
+                                    </Moment>
+                                </td>
+                                </tr>
+                            )
+                        )}
+                        </TableBody>
+                    </table>
+                    </div>
               </div>
             )}
           </div>
