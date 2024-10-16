@@ -8,31 +8,31 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.Arrays;
+import java.util.List;
 
+/**
+ * This class configures CORS, and specifies which methods are allowed
+ * along with which origins and headers.
+ * @author: peter.song@oracle.com
+ */
 @Configuration
 public class CorsConfig {
-    private static final Logger logger = LoggerFactory.getLogger(CorsConfig.class);
+    private final Logger logger = LoggerFactory.getLogger(CorsConfig.class);
 
     @Bean
     public CorsFilter corsFilter() {
-        logger.info("Initializing CORS configuration");
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
+        config.setAllowedOrigins(List.of(
                 "http://localhost:8080",
                 "https://objectstorage.us-phoenix-1.oraclecloud.com",
                 "https://petstore.swagger.io"
         ));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "location"));
-        config.setAllowCredentials(true);  // Allow credentials
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
+        config.addAllowedHeader("*");
+        config.addExposedHeader("location");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
-        logger.info("CORS configuration completed");
         return new CorsFilter(source);
     }
 }

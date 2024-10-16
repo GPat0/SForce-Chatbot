@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -17,27 +18,54 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .authorizeRequests()
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
+                .authorizeRequests()
+                .antMatchers("/", "/home", "/login", "/css/**", "/js/**").permitAll()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-            .formLogin()
-                .loginPage("/login")
+                .formLogin()
+                .loginPage("/login")  // Specify the path to your custom login page
+                .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
                 .and()
-            .logout()
-                .permitAll();
+                .logout()
+                .logoutSuccessUrl("/")
+                .permitAll()
+                .and()
+                .httpBasic();
     }
 
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        UserDetails user =
-             User.withDefaultPasswordEncoder()
+        UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("ADMIN")
                 .password("None10001000")
-                .roles("ADMIN")
+                .roles("ADMIN", "USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
+        UserDetails user = User.withDefaultPasswordEncoder()
+                .username("USER")
+                .password("pass123")
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, user);
     }
 }
+/*
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf().disable();
+        //httpSecurity.authorizeRequests().anyRequest().authenticated().and().
+        //formLogin().and().logout().permitAll();
+    }
+}
+*/

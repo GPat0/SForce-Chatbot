@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name = "PROJECT") // Specify the correct table name and schema
+@Table(name = "NEW_PROJECT") // Specify the correct table name and schema
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

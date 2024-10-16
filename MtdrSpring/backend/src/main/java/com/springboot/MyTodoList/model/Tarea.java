@@ -3,14 +3,14 @@ package com.springboot.MyTodoList.model;
 import javax.persistence.*;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "TASK") // Ensure this is the correct schema and table name
+@Table(name = "TASK")
 public class Tarea {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
 
     @Column(name = "DESCRIPTION")
     private String descripcion;
