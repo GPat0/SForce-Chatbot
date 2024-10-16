@@ -3,6 +3,9 @@ package com.springboot.MyTodoList.model;
 import javax.persistence.*;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "TASK") // Ensure this is the correct schema and table name
@@ -38,7 +41,8 @@ public class Tarea {
 
     @ManyToOne
     @JoinColumn(name = "PROJECTID", nullable = false)
-    @JsonBackReference
+    //@JsonBackReference
+    @JsonIgnore
     private Proyecto proyecto;
 
     public Tarea(Long id, String descripcion, String estatus, Float tiempoEstimado, Float tiempoReal, Date fechaFinalizacion, Integer puntuacionCalidad, Float eficienciaTarea, Float productividadTarea, Proyecto proyecto) {
@@ -52,6 +56,7 @@ public class Tarea {
         this.eficienciaTarea = eficienciaTarea;
         this.productividadTarea = productividadTarea;
         this.proyecto = proyecto;
+        
     }
 
     public Tarea() {

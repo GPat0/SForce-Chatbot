@@ -30,9 +30,9 @@ public class TareaController {
     }
 
     // Create a new task
-    @PostMapping
-    public ResponseEntity<Tarea> crearTask(@Valid @RequestBody Tarea tarea) {
-        Tarea newTask = tareaService.crearTarea(tarea);
+    @PostMapping("/project/{projectId}")
+    public ResponseEntity<Tarea> crearTask(@PathVariable(value="projectId") Long projectId ,@Valid @RequestBody Tarea tarea) {
+        Tarea newTask = tareaService.crearTarea(projectId,tarea);
         return ResponseEntity.status(HttpStatus.CREATED).body(newTask);
     }
 

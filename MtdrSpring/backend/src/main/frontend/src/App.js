@@ -36,6 +36,7 @@ function App() {
   const [error, setError] = useState();
   const [currentProjectId, setCurrentProjectId] = useState(null);
   const [currentTaskId, setCurrentTaskId] = useState(null);
+  const [currentProjectO, setCurrentProjectO] = useState(null);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState(null);
@@ -231,6 +232,7 @@ function App() {
   function addProject(text) {
     setInserting(true);
     const data = { nombre: text, estatus: "Active", fechaInicio: new Date() };
+    
 
     fetch(API_PROYECTOS, {
       method: "POST",
@@ -263,9 +265,9 @@ function App() {
   function addItem(text) {
     setInserting(true);
     const data = { descripcion: text, estatus: "In Progress"};
+    console.count(data);
 
-
-    fetch(API_TAREAS, {
+    fetch(API_TAREAS+"/project/"+currentProjectId, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -290,9 +292,10 @@ function App() {
         });
   }
 
-  const handleClickCurrentProject = (id, currentitems) => {
+  const handleClickCurrentProject = (id, currentitems, project) => {
     setCurrentProjectId(id)
     setItems(currentitems)
+    setCurrentProjectO(project)
   }
   const handleClickCurrentTask = (id, currenttask) => {
     setCurrentTaskId(id)
@@ -330,7 +333,7 @@ function App() {
                             (project) =>
                             project.estatus === "Active" && (
                                 <tr key={project.id}>
-                                <td className="description" onClick={() => handleClickCurrentProject(project.id, project.tareas)}>
+                                <td className="description" onClick={() => handleClickCurrentProject(project.id, project.tareas, project)}>
                                     {project.nombre}
                                 </td>
                                 <td className="date">

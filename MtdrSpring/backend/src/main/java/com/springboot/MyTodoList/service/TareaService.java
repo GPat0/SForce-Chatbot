@@ -1,11 +1,21 @@
 package com.springboot.MyTodoList.service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.springboot.MyTodoList.service.ProyectoService;
+
+import com.springboot.MyTodoList.model.Proyecto;
+
 
 import com.springboot.MyTodoList.model.Tarea;
 import com.springboot.MyTodoList.repository.TareaRepository;
+import com.springboot.MyTodoList.repository.ProyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+
 
 @Service
 public class TareaService {
@@ -13,13 +23,28 @@ public class TareaService {
     @Autowired
     private TareaRepository tareaRepository;
 
+    @Autowired
+    private ProyectoRepository pr;
+
+    private static final Logger logger = LoggerFactory.getLogger(TareaService.class);
+
     // Create a new task
-    public Tarea crearTarea(Tarea tarea) {
-        if (tarea.getDescripcion() == null || tarea.getEstatus() == null ||
-            tarea.getTiempoEstimado() == null || tarea.getFechaFinalizacion() == null) {
-            throw new IllegalArgumentException("Task information is invalid");
-        }
-        return tareaRepository.save(tarea);
+    public Tarea crearTarea(Long proyectId, Tarea tarea) {
+        //inicializr obj Proyecto
+        logger.info("SET PROYECTO "+proyectId);
+        //ProyectoService ps = new ProyectoService();
+        //ResponseEntity<Proyecto> pid = ps.obtenerProyectoPorId(tarea.proyectoID);
+
+        pr.findById(proyectId).map(proyecto -> {
+            logger.info("SET PROYECTO 2");
+            tarea.setProyecto(proyecto);
+            logger.info("SET PROYECTO 3");
+            return tareaRepository.save(tarea);
+        });
+
+        //tarea.setProyecto(pid.getBody());
+        logger.info("set proyecto = SUCCESS");
+        return tarea;
     }
 
     // List all tasks

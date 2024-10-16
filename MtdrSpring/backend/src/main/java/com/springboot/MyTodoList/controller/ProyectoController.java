@@ -56,9 +56,7 @@ public class ProyectoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Proyecto> getProjectById(@PathVariable Long id) {
-        return proyectoService.obtenerProyectoPorId(id)
-                              .map(ResponseEntity::ok)
-                              .orElse(ResponseEntity.notFound().build());
+        return proyectoService.obtenerProyectoPorId(id);
     }
 
     @PutMapping("/{id}")
