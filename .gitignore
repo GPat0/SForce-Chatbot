@@ -49,10 +49,8 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 /MtdrSpring/backend/wallet
-MtdrSpring/backend/Dockerfile
-MtdrSpring/backend/Dockerfile
+
 MtdrSpring/backend/src/main/resources/application.properties
 *.properties
 MtdrSpring/backend/Dockerfile
-MtdrSpring/backend/src/main/resources/application.properties
-MtdrSpring/backend/src/main/resources/application.properties
+
