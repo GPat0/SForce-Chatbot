@@ -8,26 +8,26 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 
 public class BotHelper {
 
-	private static final Logger logger = LoggerFactory.getLogger(BotHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(BotHelper.class);
 
-	public static void sendMessageToTelegram(Long chatId, String text, TelegramLongPollingBot bot) {
+    public static void sendMessageToTelegram(Long chatId, String text, TelegramLongPollingBot bot, boolean removeKeyboard) {
+        try {
+            SendMessage messageToTelegram = new SendMessage();
+            messageToTelegram.setChatId(chatId);
+            messageToTelegram.setText(text);
 
-		try {
-			// prepare message
-			SendMessage messageToTelegram = new SendMessage();
-			messageToTelegram.setChatId(chatId);
-			messageToTelegram.setText(text);
+            if (removeKeyboard) {
+                ReplyKeyboardRemove keyboardMarkup = new ReplyKeyboardRemove(true);
+                messageToTelegram.setReplyMarkup(keyboardMarkup);
+            }
 
-			// hide keyboard
-			ReplyKeyboardRemove keyboardMarkup = new ReplyKeyboardRemove(true);
-			messageToTelegram.setReplyMarkup(keyboardMarkup);
+            bot.execute(messageToTelegram);
+        } catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+        }
+    }
 
-			// send message
-			bot.execute(messageToTelegram);
-
-		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
-		}
-	}
-
+    public static void sendMessageToTelegram(Long chatId, String text, TelegramLongPollingBot bot) {
+        sendMessageToTelegram(chatId, text, bot, true);
+    }
 }

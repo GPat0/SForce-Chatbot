@@ -3,7 +3,11 @@ package com.springboot.MyTodoList.util;
 public enum BotMessages {
 
     HELLO_MYTODO_BOT(
-        "Hello! I'm MyTodoList Bot! Please choose an option below or type a command:\n- /todolist to manage todo items\n- /listprojects to see all projects\n- /listtasks to see all tasks"),
+        "Hello! I'm MyTodoList Bot! Please choose an option below or type a command:\n" +
+        "- /todolist to manage todo items\n" +
+        "- /listprojects to see all projects\n" +
+        "- /listtasks to see all tasks"
+    ),
     BOT_REGISTERED_STARTED("Bot registered and started successfully!"),
     ITEM_DONE("Item marked as done! Select /todolist to return to the list of todo items, or /start to go to the main screen."),
     ITEM_UNDONE("Item marked as undone! Select /todolist to return to the list of todo items, or /start to go to the main screen."),
@@ -27,5 +31,4 @@ public enum BotMessages {
     public String getMessage() {
         return message;
     }
-
 }
