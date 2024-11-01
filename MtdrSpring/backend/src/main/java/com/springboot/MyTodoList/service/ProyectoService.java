@@ -56,5 +56,14 @@ public class ProyectoService {
         }
     }
 
+
+    public ResponseEntity<Proyecto> obtenerProyectoPorNombre(String nombre) {
+        List<Proyecto> proyectos = proyectoRepository.findByNombre(nombre);
+        if (!proyectos.isEmpty()) {
+            return new ResponseEntity<>(proyectos.get(0), HttpStatus.OK); // Asumimos que el nombre es único
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
 
